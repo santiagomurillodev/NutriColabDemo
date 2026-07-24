@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
 
@@ -9,6 +8,13 @@ export default function VistaMiDia({
   modoPareja,
   setModoPareja,
   onVerReceta,
+}: {
+  datosPaciente: any;
+  fechaHoy: any;
+  manejarCompletado: any;
+  modoPareja: any;
+  setModoPareja: any;
+  onVerReceta: any;
 }) {
   return (
     <div className="space-y-6">
@@ -68,7 +74,7 @@ export default function VistaMiDia({
         </span>
       </div>
 
-      {datosPaciente.planHoy.map((comida) => (
+      {datosPaciente.planHoy.map((comida: any) => (
         <TarjetaComida
           key={comida.id}
           comida={comida}
