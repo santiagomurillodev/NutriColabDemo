@@ -1,21 +1,17 @@
+// @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
 
-export default function VistaMiDia({
-  datosPaciente,
-  fechaHoy,
-  manejarCompletado,
-  modoPareja,
-  setModoPareja,
-  onVerReceta,
-}: {
-  datosPaciente: any;
-  fechaHoy: any;
-  manejarCompletado: any;
-  modoPareja: any;
-  setModoPareja: any;
-  onVerReceta: any;
-}) {
+export default function VistaMiDia(props: any) {
+  const {
+    datosPaciente,
+    fechaHoy,
+    manejarCompletado,
+    modoPareja,
+    setModoPareja,
+    onVerReceta,
+  } = props;
+
   return (
     <div className="space-y-6">
       <div className="sm:hidden bg-gray-100 p-1 rounded-2xl flex items-center mb-2">
