@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { mensajesChatDB } from '../data/mockDb';
-import { DATOS_PACIENTES } from '../data/planesNutricionales';
+import { DATOS_PACIENTES } from './components/planesNutricionales';
 
 // Importamos todas tus Vistas Modulares
 import VistaMiDia from './components/VistaMiDia';
