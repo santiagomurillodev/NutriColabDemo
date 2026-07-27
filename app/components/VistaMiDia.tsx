@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
+import { DATOS_PACIENTES } from '../data/planesNutricionales';
 
 interface VistaMiDiaProps {
   datosPaciente: {
@@ -22,6 +23,18 @@ export default function VistaMiDia({
   setModoPareja,
   onVerReceta,
 }: VistaMiDiaProps) {
+  
+  // Extraemos dinámicamente el día basándonos en fechaHoy, o usamos lunes por defecto
+  const diaNormalizado = fechaHoy?.toLowerCase().includes('martes') ? 'martes' : 'lunes';
+  const planOficial = DATOS_PACIENTES.carlos.dias[diaNormalizado] || DATOS_PACIENTES.carlos.dias.lunes;
+  
+  // Transformamos el objeto de 5 comidas en el arreglo que TarjetaComida necesita
+  const menuOficial = Object.values(planOficial).map((comida: any, index: number) => ({
+    ...comida,
+    id: `comida-${index}`,
+    completado: false
+  }));
+
   return (
     <div className="space-y-6">
       <div className="sm:hidden bg-gray-100 p-1 rounded-2xl flex items-center mb-2">
@@ -80,8 +93,8 @@ export default function VistaMiDia({
         </span>
       </div>
 
-      {datosPaciente?.planHoy && datosPaciente.planHoy.length > 0 ? (
-        datosPaciente.planHoy.map((comida: any) => (
+      {menuOficial.length > 0 ? (
+        menuOficial.map((comida: any) => (
           <TarjetaComida
             key={comida.id}
             comida={comida}

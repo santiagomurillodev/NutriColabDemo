@@ -1,14 +1,15 @@
 // @ts-nocheck
 import React from 'react';
+import { DATOS_PACIENTES } from '../data/planesNutricionales';
 
 export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja }) {
-  // 1. Extraemos dinámicamente las comidas del día seleccionado
-  const comidasDelDia = datosPaciente?.dias?.[diaSeleccionado] || {};
-  const todosLosIngredientes = Object.values(comidasDelDia).flatMap(
-    (comida: any) => comida.ingredientes || []
+  // 1. Extraemos TODOS los ingredientes de toda la semana para proyectar la quincena completa
+  const diasPlan = DATOS_PACIENTES.carlos.dias;
+  const todosLosIngredientes = Object.values(diasPlan).flatMap(dia =>
+    Object.values(dia).flatMap((comida: any) => comida.ingredientes || [])
   );
 
-  // 2. Agrupamos los ingredientes en categorías para mantener tu diseño visual original
+  // 2. Agrupamos los ingredientes en categorías y limpiamos duplicados
   const categorizarIngredientes = (ingredientes) => {
     const categorias = {
       verduras: { categoria: 'Frutas y Verduras', bg: 'bg-emerald-50', color: 'text-emerald-700', icono: '🥦', items: [] },
@@ -30,24 +31,30 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
       }
     });
 
-    // Retornamos solo las categorías que tengan ingredientes ese día
+    // Filtramos los ingredientes repetidos para que la lista sea limpia
+    Object.values(categorias).forEach(cat => {
+      cat.items = [...new Set(cat.items)];
+    });
+
+    // Retornamos solo las categorías que tengan elementos
     return Object.values(categorias).filter(cat => cat.items.length > 0);
   };
 
   const lista = categorizarIngredientes(todosLosIngredientes);
 
   const ajustarCantidad = (texto) => {
-    if (!modoPareja) return texto;
+    // Multiplicamos por 2 para la quincena normal, o por 4 si es modo pareja
+    const multiplicador = modoPareja ? 4 : 2;
+    
     return texto.replace(
-      /(\d+)\s*(tza|taza|cda|cucharada|pza|pieza|manojo|filete|g|kg|grs)/gi,
+      /(\d+(?:\.\d+)?)\s*(tza|taza|cda|cucharada|pza|pieza|manojo|filete|g|kg|grs)/gi,
       (match, numero, unidad) => {
-        const nuevoNumero = parseInt(numero) * 2;
+        const nuevoNumero = parseFloat(numero) * multiplicador;
         let nuevaUnidad = unidad;
         if (nuevoNumero > 1) {
-          if (unidad.toLowerCase() === 'taza') nuevaUnidad = 'tazas';
-          else if (unidad.toLowerCase() === 'cucharada')
-            nuevaUnidad = 'cucharadas';
-          else if (unidad.toLowerCase() === 'pieza') nuevaUnidad = 'piezas';
+          if (unidad.toLowerCase() === 'taza' || unidad.toLowerCase() === 'tza') nuevaUnidad = 'tazas';
+          else if (unidad.toLowerCase() === 'cda' || unidad.toLowerCase() === 'cucharada') nuevaUnidad = 'cucharadas';
+          else if (unidad.toLowerCase() === 'pza' || unidad.toLowerCase() === 'pieza') nuevaUnidad = 'piezas';
           else if (unidad.toLowerCase() === 'filete') nuevaUnidad = 'filetes';
           else if (unidad.toLowerCase() === 'manojo') nuevaUnidad = 'manojos';
         }
@@ -57,9 +64,9 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
   };
 
   const exportarAWhatsApp = () => {
-    let texto = `🛒 *LISTA DE SÚPER - NutriColab* 🛒\n`;
-    if (modoPareja) texto += `*(⚠️ Lista ajustada para 2 personas)*\n\n`;
-    else texto += `\n`;
+    let texto = `🛒 *LISTA DE SÚPER QUINCENAL - NutriColab* 🛒\n`;
+    if (modoPareja) texto += `*(⚠️ Lista ajustada para 2 personas por 15 días)*\n\n`;
+    else texto += `*(Calculada para 1 persona por 15 días)*\n\n`;
 
     lista.forEach((bloque) => {
       texto += `${bloque.icono} *${bloque.categoria.toUpperCase()}*\n`;
@@ -75,8 +82,8 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
   return (
     <div className="space-y-6">
       {/* Alerta minimalista integrada */}
-      {modoPareja && (
-        <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold px-4 py-3 rounded-2xl text-center shadow-sm flex items-center justify-center gap-2">
+      <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold px-4 py-3 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center gap-1">
+        <span className="flex items-center gap-2">
           <svg
             className="w-4 h-4"
             fill="none"
@@ -90,14 +97,14 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
           </svg>
-          Cantidades ajustadas automáticamente para 2 porciones
-        </div>
-      )}
+          Cantidades calculadas para tu Quincena {modoPareja ? '(x4 porciones)' : '(x2 porciones)'}
+        </span>
+      </div>
 
       {/* Grid de Categorías del Súper */}
       {lista.length === 0 ? (
         <div className="bg-white rounded-[2rem] p-8 text-center border border-gray-100">
-          <p className="text-gray-400 font-medium">No hay ingredientes registrados para este día.</p>
+          <p className="text-gray-400 font-medium">No hay ingredientes registrados para este plan.</p>
         </div>
       ) : (
         lista.map((bloque, idx) => (
