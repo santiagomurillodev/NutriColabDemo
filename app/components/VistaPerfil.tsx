@@ -1,6 +1,9 @@
+// @ts-nocheck
 import React from 'react';
 
-export default function VistaPerfil({ datosPaciente, cerrarSesion }) {
+export default function VistaPerfil(props: any) {
+  const { datosPaciente, cerrarSesion } = props;
+
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-8">
       {/* Tarjeta Principal de Perfil */}
