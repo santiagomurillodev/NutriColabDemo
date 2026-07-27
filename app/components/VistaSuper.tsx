@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { DATOS_PACIENTES } from '../data/planesNutricionales';
+import { DATOS_PACIENTES } from './planesNutricionales';
 
 export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja }) {
   // 1. Extraemos TODOS los ingredientes de toda la semana para proyectar la quincena completa

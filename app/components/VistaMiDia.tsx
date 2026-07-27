@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
-import { DATOS_PACIENTES } from '../data/planesNutricionales';
+import { DATOS_PACIENTES } from './planesNutricionales';
 
 interface VistaMiDiaProps {
   datosPaciente: {
