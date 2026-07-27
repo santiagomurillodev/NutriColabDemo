@@ -1,67 +1,58 @@
 // @ts-nocheck
 import React from 'react';
-import { DATOS_PACIENTES } from './planesNutricionales';
 
-export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja }) {
-  // 1. Extraemos TODOS los ingredientes de toda la semana para proyectar la quincena completa
-  const diasPlan = DATOS_PACIENTES.carlos.dias;
-  const todosLosIngredientes = Object.values(diasPlan).flatMap(dia =>
+export default function VistaSuper({ datosPaciente, modoPareja }) {
+  // Extraemos todos los ingredientes del plan para hacer la lista quincenal global
+  const todosLosIngredientes = Object.values(datosPaciente?.dias || {}).flatMap(dia =>
     Object.values(dia).flatMap((comida: any) => comida.ingredientes || [])
   );
 
-  // 2. Agrupamos los ingredientes en categorías y limpiamos duplicados
-  const categorizarIngredientes = (ingredientes) => {
-    const categorias = {
+  const agruparYConvertirCompras = (ingredientesRaw) => {
+    // Calculamos para 14 días. Modo pareja = 14 * 2 porciones extra.
+    const factorQuincena = modoPareja ? 4 : 2;
+
+    const listaDeCompras = {
       verduras: { categoria: 'Frutas y Verduras', bg: 'bg-emerald-50', color: 'text-emerald-700', icono: '🥦', items: [] },
       proteinas: { categoria: 'Carnes y Lácteos', bg: 'bg-orange-50', color: 'text-orange-700', icono: '🥩', items: [] },
       abarrotes: { categoria: 'Abarrotes y Otros', bg: 'bg-blue-50', color: 'text-blue-700', icono: '🛒', items: [] }
     };
 
-    const kwVerduras = ['acelga', 'espinaca', 'jitomate', 'cebolla', 'naranja', 'jícama', 'fresa', 'plátano', 'pera', 'manzana', 'aguacate', 'elote', 'chile', 'zanahoria', 'calabacita', 'chayote', 'champiñon', 'sandía', 'limón', 'fruta'];
-    const kwProteinas = ['pollo', 'queso', 'panela', 'huevo', 'salchicha', 'crema', 'res', 'philadelphia', 'jamón', 'carne'];
+    const textoUnido = ingredientesRaw.join(' ').toLowerCase();
 
-    ingredientes.forEach(ing => {
-      const lowerIng = ing.toLowerCase();
-      if (kwVerduras.some(kw => lowerIng.includes(kw))) {
-        categorias.verduras.items.push(ing);
-      } else if (kwProteinas.some(kw => lowerIng.includes(kw))) {
-        categorias.proteinas.items.push(ing);
-      } else {
-        categorias.abarrotes.items.push(ing);
-      }
-    });
+    // Lógica inteligente de conversión a compras reales de súper (cantidades estimadas por quincena)
+    if (textoUnido.includes('acelga') || textoUnido.includes('espinaca')) listaDeCompras.verduras.items.push(`${1 * factorQuincena} manojo(s) de Espinacas o Acelgas`);
+    if (textoUnido.includes('jitomate')) listaDeCompras.verduras.items.push(`${1.5 * factorQuincena} kg de Jitomate Saladet`);
+    if (textoUnido.includes('cebolla')) listaDeCompras.verduras.items.push(`${0.5 * factorQuincena} kg de Cebolla Blanca`);
+    if (textoUnido.includes('aguacate')) listaDeCompras.verduras.items.push(`${1 * factorQuincena} kg de Aguacate Hass`);
+    if (textoUnido.includes('jícama')) listaDeCompras.verduras.items.push(`${1 * factorQuincena} kg de Jícama`);
+    if (textoUnido.includes('fresa')) listaDeCompras.verduras.items.push(`${1 * factorQuincena} domo(s) de Fresas`);
+    if (textoUnido.includes('plátano') || textoUnido.includes('manzana') || textoUnido.includes('pera') || textoUnido.includes('naranja') || textoUnido.includes('sandía')) {
+      listaDeCompras.verduras.items.push(`${2 * factorQuincena} kg de Fruta Mixta de temporada`);
+    }
+    if (textoUnido.includes('chile verde') || textoUnido.includes('limón')) listaDeCompras.verduras.items.push(`${0.5 * factorQuincena} kg de Limón y Chiles verdes`);
+    if (textoUnido.includes('zanahoria') || textoUnido.includes('calabacita') || textoUnido.includes('chayote')) listaDeCompras.verduras.items.push(`${1.5 * factorQuincena} kg de Verdura Mixta (Zanahoria, Calabaza, Chayote)`);
+    if (textoUnido.includes('champiñon')) listaDeCompras.verduras.items.push(`${1 * factorQuincena} domo(s) de Champiñones`);
 
-    // Filtramos los ingredientes repetidos para que la lista sea limpia
-    Object.values(categorias).forEach(cat => {
-      cat.items = [...new Set(cat.items)];
-    });
-
-    // Retornamos solo las categorías que tengan elementos
-    return Object.values(categorias).filter(cat => cat.items.length > 0);
-  };
-
-  const lista = categorizarIngredientes(todosLosIngredientes);
-
-  const ajustarCantidad = (texto) => {
-    // Multiplicamos por 2 para la quincena normal, o por 4 si es modo pareja
-    const multiplicador = modoPareja ? 4 : 2;
+    if (textoUnido.includes('pollo')) listaDeCompras.proteinas.items.push(`${2 * factorQuincena} kg de Pechuga o Pierna de Pollo sin piel`);
+    if (textoUnido.includes('res') || textoUnido.includes('asada') || textoUnido.includes('deshebrada')) listaDeCompras.proteinas.items.push(`${1.5 * factorQuincena} kg de Carne de Res magra`);
+    if (textoUnido.includes('panela')) listaDeCompras.proteinas.items.push(`${1 * factorQuincena} kg de Queso Panela`);
+    if (textoUnido.includes('huevo')) listaDeCompras.proteinas.items.push(`${1 * factorQuincena} cartera(s) de Huevo (30 pzas)`);
+    if (textoUnido.includes('salchicha') || textoUnido.includes('jamón')) listaDeCompras.proteinas.items.push(`${1 * factorQuincena} paquete(s) de Carnes frías de Pavo`);
     
-    return texto.replace(
-      /(\d+(?:\.\d+)?)\s*(tza|taza|cda|cucharada|pza|pieza|manojo|filete|g|kg|grs)/gi,
-      (match, numero, unidad) => {
-        const nuevoNumero = parseFloat(numero) * multiplicador;
-        let nuevaUnidad = unidad;
-        if (nuevoNumero > 1) {
-          if (unidad.toLowerCase() === 'taza' || unidad.toLowerCase() === 'tza') nuevaUnidad = 'tazas';
-          else if (unidad.toLowerCase() === 'cda' || unidad.toLowerCase() === 'cucharada') nuevaUnidad = 'cucharadas';
-          else if (unidad.toLowerCase() === 'pza' || unidad.toLowerCase() === 'pieza') nuevaUnidad = 'piezas';
-          else if (unidad.toLowerCase() === 'filete') nuevaUnidad = 'filetes';
-          else if (unidad.toLowerCase() === 'manojo') nuevaUnidad = 'manojos';
-        }
-        return `${nuevoNumero} ${nuevaUnidad}`;
-      }
-    );
+    if (textoUnido.includes('tortilla')) listaDeCompras.abarrotes.items.push(`${2 * factorQuincena} kg de Tortilla de Maíz`);
+    if (textoUnido.includes('pan integral')) listaDeCompras.abarrotes.items.push(`${1 * factorQuincena} barra(s) de Pan Integral`);
+    if (textoUnido.includes('almendra')) listaDeCompras.abarrotes.items.push(`${250 * factorQuincena}g de Almendras`);
+    if (textoUnido.includes('aceite')) listaDeCompras.abarrotes.items.push(`1 botella de Aceite para cocinar (Oliva/Aguacate)`);
+    if (textoUnido.includes('crema') || textoUnido.includes('philadelphia')) listaDeCompras.abarrotes.items.push(`${1 * factorQuincena} envase(s) de Crema y Queso untable`);
+    if (textoUnido.includes('stevia')) listaDeCompras.abarrotes.items.push(`1 caja de Edulcorante (Stevia)`);
+    if (textoUnido.includes('jamaica')) listaDeCompras.abarrotes.items.push(`250g de Flor de Jamaica`);
+
+    // Limpiamos duplicados si los hubiera
+    Object.values(listaDeCompras).forEach(cat => { cat.items = [...new Set(cat.items)]; });
+    return Object.values(listaDeCompras).filter(cat => cat.items.length > 0);
   };
+
+  const lista = agruparYConvertirCompras(todosLosIngredientes);
 
   const exportarAWhatsApp = () => {
     let texto = `🛒 *LISTA DE SÚPER QUINCENAL - NutriColab* 🛒\n`;
@@ -71,7 +62,7 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
     lista.forEach((bloque) => {
       texto += `${bloque.icono} *${bloque.categoria.toUpperCase()}*\n`;
       bloque.items.forEach((item) => {
-        texto += `▫️ ${ajustarCantidad(item)}\n`;
+        texto += `▫️ ${item}\n`;
       });
       texto += `\n`;
     });
@@ -81,58 +72,31 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
 
   return (
     <div className="space-y-6">
-      {/* Alerta minimalista integrada */}
       <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold px-4 py-3 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center gap-1">
         <span className="flex items-center gap-2">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          Cantidades calculadas para tu Quincena {modoPareja ? '(x4 porciones)' : '(x2 porciones)'}
+          Cantidades del súper calculadas para tu Quincena {modoPareja ? '(x4 porciones)' : '(x2 porciones)'}
         </span>
       </div>
 
-      {/* Grid de Categorías del Súper */}
       {lista.length === 0 ? (
         <div className="bg-white rounded-[2rem] p-8 text-center border border-gray-100">
           <p className="text-gray-400 font-medium">No hay ingredientes registrados para este plan.</p>
         </div>
       ) : (
         lista.map((bloque, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden"
-          >
-            <div
-              className={`${bloque.bg} px-5 py-4 border-b border-gray-100 flex items-center gap-3`}
-            >
+          <div key={idx} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div className={`${bloque.bg} px-5 py-4 border-b border-gray-100 flex items-center gap-3`}>
               <span className="text-2xl">{bloque.icono}</span>
-              <h3 className={`font-bold ${bloque.color} text-lg`}>
-                {bloque.categoria}
-              </h3>
+              <h3 className={`font-bold ${bloque.color} text-lg`}>{bloque.categoria}</h3>
             </div>
             <div className="p-4 space-y-2">
               {bloque.items.map((item, itemIdx) => (
-                <label
-                  key={itemIdx}
-                  className="flex items-center gap-3 p-3 rounded-2xl cursor-pointer hover:bg-gray-50 transition"
-                >
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 transition"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {ajustarCantidad(item)}
-                  </span>
+                <label key={itemIdx} className="flex items-center gap-3 p-3 rounded-2xl cursor-pointer hover:bg-gray-50 transition">
+                  <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 transition" />
+                  <span className="text-sm font-medium text-gray-700">{item}</span>
                 </label>
               ))}
             </div>
@@ -140,7 +104,6 @@ export default function VistaSuper({ datosPaciente, diaSeleccionado, modoPareja 
         ))
       )}
 
-      {/* Botón WhatsApp */}
       {lista.length > 0 && (
         <div className="pt-2 pb-8">
           <button

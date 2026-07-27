@@ -1,13 +1,9 @@
 // @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
-import { DATOS_PACIENTES } from './planesNutricionales';
 
 interface VistaMiDiaProps {
-  datosPaciente: {
-    planHoy: any[];
-    [key: string]: any;
-  };
+  datosPaciente: any;
   fechaHoy: string;
   manejarCompletado: (id: string, estado: boolean) => void;
   modoPareja: boolean;
@@ -25,10 +21,10 @@ export default function VistaMiDia({
 }: VistaMiDiaProps) {
   
   // Extraemos dinámicamente el día basándonos en fechaHoy, o usamos lunes por defecto
-  const diaNormalizado = fechaHoy?.toLowerCase().includes('martes') ? 'martes' : 'lunes';
-  const planOficial = DATOS_PACIENTES.carlos.dias[diaNormalizado] || DATOS_PACIENTES.carlos.dias.lunes;
+  const diaFiltro = fechaHoy?.toLowerCase().includes('martes') ? 'martes' : 'lunes';
+  const planOficial = datosPaciente?.dias?.[diaFiltro] || datosPaciente?.dias?.lunes || {};
   
-  // Transformamos el objeto de 5 comidas en el arreglo que TarjetaComida necesita
+  // Transformamos el objeto de comidas en el arreglo que TarjetaComida necesita
   const menuOficial = Object.values(planOficial).map((comida: any, index: number) => ({
     ...comida,
     id: `comida-${index}`,
@@ -46,18 +42,8 @@ export default function VistaMiDia({
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          <svg
-            className="w-4 h-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            ></path>
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
           </svg>
           Individual
         </button>
@@ -69,18 +55,8 @@ export default function VistaMiDia({
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
           Pareja (x2)
         </button>

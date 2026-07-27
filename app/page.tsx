@@ -2,7 +2,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { pacientesDB, mensajesChatDB } from '../data/mockDb';
+import { mensajesChatDB } from '../data/mockDb';
+import { DATOS_PACIENTES } from '../data/planesNutricionales';
 
 // Importamos todas tus Vistas Modulares
 import VistaMiDia from './components/VistaMiDia';
@@ -118,7 +119,7 @@ export default function AppPrincipal() {
 
   if (!estaAutenticado) {
     return (
-      <div className="min-h-screen flex selection:bg-emerald-200 bg-white">
+      <div className="min-h-dvh flex selection:bg-emerald-200 bg-white">
         {/* Lado Izquierdo (Branding - Solo Desktop) */}
         <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-500 to-teal-700 items-center justify-center p-12 relative overflow-hidden">
           <div
@@ -251,7 +252,8 @@ export default function AppPrincipal() {
 
 // === CASCARÓN PRINCIPAL DE LA APP ===
 function LayoutPaciente({ cerrarSesion }) {
-  const [datosPaciente] = useState(pacientesDB[0]);
+  // Conectamos el estado global a nuestro archivo dinámico
+  const [datosPaciente] = useState(DATOS_PACIENTES.carlos);
   const [vistaActiva, setVistaActiva] = useState('mi-dia');
   const [comidaParaReceta, setComidaParaReceta] = useState(null);
   const [modoPareja, setModoPareja] = useState(false);
@@ -268,7 +270,6 @@ function LayoutPaciente({ cerrarSesion }) {
     setFechaHoy(fecha.charAt(0).toUpperCase() + fecha.slice(1));
   }, []);
 
-  const generarListaSuper = () => datosPaciente.listaSuperSemanal || [];
   const manejarCompletado = (idComida, nuevoEstado) =>
     console.log(`Comida ${idComida}: ${nuevoEstado}`);
 
@@ -285,7 +286,8 @@ function LayoutPaciente({ cerrarSesion }) {
     );
 
   return (
-    <div className="bg-[#F8FAFC] font-sans antialiased text-gray-800 min-h-screen pb-24 md:pb-0">
+    // Aquí cambiamos min-h-screen por min-h-dvh y aumentamos el padding inferior en móvil (pb-28)
+    <div className="bg-[#F8FAFC] font-sans antialiased text-gray-800 min-h-dvh pb-28 md:pb-0">
       {/* NAVBAR SUPERIOR */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -537,7 +539,7 @@ function LayoutPaciente({ cerrarSesion }) {
                       </button>
                     </div>
                     <VistaSuper
-                      generarListaSuper={generarListaSuper}
+                      datosPaciente={datosPaciente} // Le pasamos los datos globales dinámicos
                       modoPareja={modoPareja}
                     />
                   </div>
@@ -590,8 +592,8 @@ function LayoutPaciente({ cerrarSesion }) {
       </main>
 
       {/* NAVBAR MÓVIL INFERIOR */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-200 z-50">
-        <div className="flex justify-around items-center h-16 px-1">
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-200 z-50 h-20">
+        <div className="flex justify-around items-center h-full px-1">
           <button
             onClick={() => {
               setVistaActiva('mi-dia');
@@ -611,7 +613,7 @@ function LayoutPaciente({ cerrarSesion }) {
               </svg>
             </div>
             <span
-              className={`text-[9px] font-bold mt-1 ${
+              className={`text-[10px] font-bold mt-1 ${
                 vistaActiva === 'mi-dia' || vistaActiva === 'receta'
                   ? 'text-emerald-700'
                   : 'text-gray-400'
@@ -647,7 +649,7 @@ function LayoutPaciente({ cerrarSesion }) {
               </svg>
             </div>
             <span
-              className={`text-[9px] font-bold mt-1 ${
+              className={`text-[10px] font-bold mt-1 ${
                 vistaActiva === 'super' ? 'text-emerald-700' : 'text-gray-400'
               }`}
             >
@@ -681,7 +683,7 @@ function LayoutPaciente({ cerrarSesion }) {
               </svg>
             </div>
             <span
-              className={`text-[9px] font-bold mt-1 ${
+              className={`text-[10px] font-bold mt-1 ${
                 vistaActiva === 'entrenamiento'
                   ? 'text-emerald-700'
                   : 'text-gray-400'
@@ -717,7 +719,7 @@ function LayoutPaciente({ cerrarSesion }) {
               </svg>
             </div>
             <span
-              className={`text-[9px] font-bold mt-1 ${
+              className={`text-[10px] font-bold mt-1 ${
                 vistaActiva === 'chat' ? 'text-emerald-700' : 'text-gray-400'
               }`}
             >
@@ -751,7 +753,7 @@ function LayoutPaciente({ cerrarSesion }) {
               </svg>
             </div>
             <span
-              className={`text-[9px] font-bold mt-1 ${
+              className={`text-[10px] font-bold mt-1 ${
                 vistaActiva === 'progreso'
                   ? 'text-emerald-700'
                   : 'text-gray-400'
