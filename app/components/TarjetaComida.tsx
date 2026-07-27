@@ -1,25 +1,27 @@
-// @ts-nocheck
 'use client';
 import React, { useState } from 'react';
 
-export default function TarjetaComida({
-  comida,
-  onCompletar,
-  modoPareja,
-  onVerReceta,
-}) {
+export default function TarjetaComida(props: any) {
+  // Extraemos las variables aquí adentro para evitar el error de tipado en Vercel
+  const {
+    comida,
+    onCompletar,
+    modoPareja,
+    onVerReceta,
+  } = props;
+
   const [estaCompletada, setEstaCompletada] = useState(comida.completado);
 
   // Estados para la IA de Sustitución
-  const [ingredientesSustituidos, setIngredientesSustituidos] = useState({});
-  const [cargandoIA, setCargandoIA] = useState({});
+  const [ingredientesSustituidos, setIngredientesSustituidos] = useState<any>({});
+  const [cargandoIA, setCargandoIA] = useState<any>({});
 
   const handleCompletar = () => {
     setEstaCompletada(!estaCompletada);
     if (onCompletar) onCompletar(comida.id, !estaCompletada);
   };
 
-  const ajustarCantidad = (texto) => {
+  const ajustarCantidad = (texto: string) => {
     if (!modoPareja) return texto;
     return texto.replace(
       /(\d+)\s*(tza|taza|cda|cucharada|pza|pieza|manojo|filete|g|kg)/gi,
@@ -40,8 +42,8 @@ export default function TarjetaComida({
   };
 
   // Simulación de conexión a la IA para sustituir ingredientes
-  const simularSustitucionIA = (index, textoOriginal) => {
-    setCargandoIA((prev) => ({ ...prev, [index]: true }));
+  const simularSustitucionIA = (index: number, textoOriginal: string) => {
+    setCargandoIA((prev: any) => ({ ...prev, [index]: true }));
 
     setTimeout(() => {
       let sustituto = 'Calculando equivalencia...';
@@ -63,8 +65,8 @@ export default function TarjetaComida({
         sustituto =
           'Opción libre de la misma categoría (Ver tabla de equivalencias)';
 
-      setIngredientesSustituidos((prev) => ({ ...prev, [index]: sustituto }));
-      setCargandoIA((prev) => ({ ...prev, [index]: false }));
+      setIngredientesSustituidos((prev: any) => ({ ...prev, [index]: sustituto }));
+      setCargandoIA((prev: any) => ({ ...prev, [index]: false }));
     }, 1500); // 1.5 seg de "pensamiento" de la IA
   };
 
@@ -141,7 +143,7 @@ export default function TarjetaComida({
 
           {/* LISTA DE INGREDIENTES Y BOTÓN DE IA */}
           <ul className="space-y-3 mb-5">
-            {comida.ingredientes.map((ingrediente, index) => {
+            {comida.ingredientes.map((ingrediente: string, index: number) => {
               const textoFinal = ingredientesSustituidos[index]
                 ? ingredientesSustituidos[index]
                 : ajustarCantidad(ingrediente);
