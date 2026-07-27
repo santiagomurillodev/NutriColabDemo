@@ -122,7 +122,6 @@ export default function AppPrincipal() {
       <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-white selection:bg-emerald-200">
         {/* Lado Izquierdo (Branding - Solo Desktop) */}
         <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-600 to-teal-800 items-center justify-center p-12 relative overflow-hidden">
-          {/* Efectos de fondo glassmorphic */}
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/10 blur-[100px] rounded-full"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-300/20 blur-[120px] rounded-full"></div>
           
@@ -150,7 +149,6 @@ export default function AppPrincipal() {
         {/* Lado Derecho (Formulario) */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-[#F8FAFC] flex-1">
           <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
-            {/* Logo móvil */}
             <div className="lg:hidden flex flex-col items-center mb-8 mt-4">
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 mb-4">
                 <span className="text-white font-extrabold text-3xl">N</span>
@@ -202,11 +200,7 @@ export default function AppPrincipal() {
                 >
                   {estaIngresando ? (
                     <>
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -351,6 +345,12 @@ function LayoutPaciente({ cerrarSesion }) {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* WIDGET DE RACHA 🔥 */}
+              <div className="hidden sm:flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-3 py-1.5 rounded-full shadow-sm" title="Racha de días cumplidos">
+                <span className="text-base animate-pulse">🔥</span>
+                <span className="text-sm font-extrabold text-orange-600 tracking-tight">12 Días</span>
+              </div>
+
               <button
                 onClick={() => setVistaActiva('perfil')}
                 className={`flex items-center gap-2 py-1 px-1 sm:px-3 rounded-full border transition-all ${
@@ -359,12 +359,8 @@ function LayoutPaciente({ cerrarSesion }) {
                     : 'bg-white border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                <div className="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs shadow-sm">
-                  {datosPaciente.nombre
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .substring(0, 2)}
+                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shadow-sm">
+                  {datosPaciente.nombre.split(' ').map((n) => n[0]).join('').substring(0, 2)}
                 </div>
                 <span className="text-sm font-bold text-gray-700 hidden sm:block pr-1">
                   Mi Perfil
@@ -377,7 +373,6 @@ function LayoutPaciente({ cerrarSesion }) {
 
       {/* ÁREA DE CONTENIDO */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Cabeceras Dinámicas */}
         {vistaActiva !== 'receta' && vistaActiva !== 'perfil' && (
           <div className="mb-8 flex justify-between items-end">
             <div>
@@ -424,10 +419,10 @@ function LayoutPaciente({ cerrarSesion }) {
               {vistaActiva === 'progreso' && (
                 <>
                   <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                    Tus Métricas 📈
+                    Tus Métricas y Rendimiento 📈
                   </h1>
                   <p className="text-gray-500 mt-1 font-medium">
-                    Así va tu evolución antropométrica.
+                    Analíticas cruzadas, antropometría y apego al plan.
                   </p>
                 </>
               )}
@@ -523,7 +518,10 @@ function LayoutPaciente({ cerrarSesion }) {
                 {vistaActiva === 'entrenamiento' && <VistaEntrenamiento />}
                 {vistaActiva === 'chat' && <VistaChatPaciente />}
                 {vistaActiva === 'progreso' && (
-                  <VistaProgreso metricas={datosPaciente.metricas || pacientesDB[0]?.metricas || []} />
+                  <VistaProgreso 
+                    metricas={datosPaciente.metricas || pacientesDB[0]?.metricas || []} 
+                    modoPareja={modoPareja} 
+                  />
                 )}
                 {vistaActiva === 'receta' && comidaParaReceta && (
                   <VistaReceta
@@ -563,7 +561,7 @@ function LayoutPaciente({ cerrarSesion }) {
         </div>
       </main>
 
-      {/* NAVBAR MÓVIL INFERIOR CON REGLAS DE SAFE-AREA */}
+      {/* NAVBAR MÓVIL INFERIOR */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 z-50 h-[calc(5rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-around items-center h-full px-2 max-w-md mx-auto">
           {[
