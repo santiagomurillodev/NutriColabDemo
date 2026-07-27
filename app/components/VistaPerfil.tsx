@@ -51,8 +51,7 @@ export default function VistaPerfil(props: any) {
           Paciente Activo
         </p>
         <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
-          Registrado desde abril de 2026. Plan nutricional enfocado en
-          recomposición corporal y aumento de masa muscular.
+          Próxima cita de revisión: {datosPaciente.proximaCita || "Viernes 07 de agosto 07:30pm"}[cite: 1, 2].
         </p>
       </div>
 
@@ -72,15 +71,15 @@ export default function VistaPerfil(props: any) {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             ></path>
           </svg>
-          Expediente Clínico
+          Expediente Clínico Oficial
         </h3>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-              Edad
+              Peso Actual
             </p>
-            <p className="font-extrabold text-gray-900">24 años</p>
+            <p className="font-extrabold text-gray-900">{datosPaciente.pesoActual}</p>
           </div>
           <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
@@ -88,13 +87,24 @@ export default function VistaPerfil(props: any) {
             </p>
             <p className="font-extrabold text-gray-900">O+</p>
           </div>
+          <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+              % Grasa Corporal
+            </p>
+            <p className="font-extrabold text-gray-900">{datosPaciente.porcentajeGrasa}</p>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+              % Masa Muscular
+            </p>
+            <p className="font-extrabold text-gray-900">{datosPaciente.porcentajeMusculo}</p>
+          </div>
           <div className="col-span-2 p-4 bg-gray-50 rounded-2xl border border-gray-100">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
               Observaciones Físicas
             </p>
             <p className="font-bold text-gray-900 text-sm">
-              Pie plano severo (sin arco). Requiere precaución con rutinas de
-              alto impacto.
+              {datosPaciente.observaciones}
             </p>
           </div>
           <div className="col-span-2 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
@@ -102,7 +112,7 @@ export default function VistaPerfil(props: any) {
               Nutriólogo Asignado
             </p>
             <p className="font-extrabold text-emerald-900">
-              {datosPaciente.nutriologo}
+              {datosPaciente.nutriologo} (Tlajomulco de Zúñiga, Jal.)[cite: 1, 2]
             </p>
           </div>
         </div>
