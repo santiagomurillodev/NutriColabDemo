@@ -1,16 +1,14 @@
-// @ts-nocheck
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
 
 export default function VistaMiDia(props: any) {
-  const {
-    datosPaciente,
-    fechaHoy,
-    manejarCompletado,
-    modoPareja,
-    setModoPareja,
-    onVerReceta,
-  } = props;
+  // Extraemos las variables aquí adentro para que TypeScript no marque error en la declaración
+  const datosPaciente = props.datosPaciente;
+  const fechaHoy = props.fechaHoy;
+  const manejarCompletado = props.manejarCompletado;
+  const modoPareja = props.modoPareja;
+  const setModoPareja = props.setModoPareja;
+  const onVerReceta = props.onVerReceta;
 
   return (
     <div className="space-y-6">
