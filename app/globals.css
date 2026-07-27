@@ -2,15 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Forzamos a que el fondo del navegador sea siempre del color de tu app, nunca negro */
 html,
 body {
-  background-color: #ffffff; /* Color blanco para el login */
+  background-color: #ffffff;
   color: #1F2937;
-  /* Quitamos el overflow-x y el overscroll-behavior para que los gestos de Windows y Mac vuelvan a funcionar */
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
-/* Cuando el usuario entra a la app, cambiamos el fondo de body al color grisecito #F8FAFC */
+/* Modo Oscuro Global */
+.dark {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
+.dark body {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
 body:has(main) {
   background-color: #F8FAFC;
+}
+
+.dark body:has(main) {
+  background-color: #0F172A !important;
 }

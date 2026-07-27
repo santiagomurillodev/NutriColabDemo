@@ -14,7 +14,7 @@ import VistaPerfil from './components/VistaPerfil';
 import VistaEntrenamiento from './components/VistaEntrenamiento';
 
 // Componente del Chat Interno para el Paciente
-function VistaChatPaciente() {
+function VistaChatPaciente({ isDarkMode }) {
   const [mensajes, setMensajes] = useState(mensajesChatDB);
   const [nuevoMensaje, setNuevoMensaje] = useState('');
 
@@ -37,15 +37,15 @@ function VistaChatPaciente() {
   };
 
   return (
-    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+    <div className={`rounded-[2rem] border shadow-sm overflow-hidden flex flex-col h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500 ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-100 text-gray-800'}`}>
+      <div className={`p-5 border-b flex items-center justify-between ${isDarkMode ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50/50 border-gray-100'}`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shadow-inner">
             LC
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">Mtro. Luis Ceja</h3>
-            <p className="text-xs text-emerald-600 font-medium">
+            <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Mtro. Luis Ceja</h3>
+            <p className="text-xs text-emerald-500 font-medium">
               ● Tu Nutriólogo Asignado
             </p>
           </div>
@@ -53,7 +53,7 @@ function VistaChatPaciente() {
         <span className="text-xs font-bold text-gray-400">Canal Seguro 🔒</span>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-gray-50/30">
+      <div className={`flex-1 p-6 overflow-y-auto space-y-4 ${isDarkMode ? 'bg-gray-900/30' : 'bg-gray-50/30'}`}>
         {mensajes.map((msg) => {
           const esPaciente = msg.remitente === 'paciente';
           return (
@@ -65,6 +65,8 @@ function VistaChatPaciente() {
                 className={`max-w-[75%] p-4 rounded-2xl text-sm ${
                   esPaciente
                     ? 'bg-emerald-500 text-white rounded-br-none shadow-md'
+                    : isDarkMode 
+                    ? 'bg-gray-700 text-white border-gray-600 rounded-bl-none' 
                     : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none shadow-sm'
                 }`}
               >
@@ -84,18 +86,18 @@ function VistaChatPaciente() {
 
       <form
         onSubmit={enviarMensaje}
-        className="p-4 border-t border-gray-100 bg-white flex gap-3"
+        className={`p-4 border-t flex gap-3 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}
       >
         <input
           type="text"
           value={nuevoMensaje}
           onChange={(e) => setNuevoMensaje(e.target.value)}
           placeholder="Escribe una duda sobre tu dieta..."
-          className="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm bg-gray-50 hover:bg-white focus:bg-white"
+          className={`flex-1 px-4 py-3 rounded-xl border outline-none transition-all text-sm ${isDarkMode ? 'bg-gray-900 border-gray-700 text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white'}`}
         />
         <button
           type="submit"
-          className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-emerald-400 transition-all shadow-md hover:shadow-lg active:scale-95"
+          className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-emerald-400 transition-all shadow-md active:scale-95"
         >
           Enviar
         </button>
@@ -107,7 +109,16 @@ function VistaChatPaciente() {
 export default function AppPrincipal() {
   const [estaAutenticado, setEstaAutenticado] = useState(false);
   const [estaIngresando, setEstaIngresando] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const simularLogin = () => {
     setEstaIngresando(true);
@@ -238,11 +249,11 @@ export default function AppPrincipal() {
     );
   }
 
-  return <LayoutPaciente cerrarSesion={() => setEstaAutenticado(false)} />;
+  return <LayoutPaciente cerrarSesion={() => setEstaAutenticado(false)} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />;
 }
 
 // === CASCARÓN PRINCIPAL DE LA APP ===
-function LayoutPaciente({ cerrarSesion }) {
+function LayoutPaciente({ cerrarSesion, isDarkMode, setIsDarkMode }) {
   const [datosPaciente] = useState(DATOS_PACIENTES.carlos);
   const [vistaActiva, setVistaActiva] = useState('mi-dia');
   const [comidaParaReceta, setComidaParaReceta] = useState(null);
@@ -276,28 +287,28 @@ function LayoutPaciente({ cerrarSesion }) {
     );
 
   return (
-    <div className="bg-[#F8FAFC] font-sans antialiased text-gray-800 min-h-[100dvh] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className={`font-sans antialiased min-h-[100dvh] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 transition-colors duration-300 ${isDarkMode ? 'bg-[#0F172A] text-gray-100' : 'bg-[#F8FAFC] text-gray-800'}`}>
       {/* NAVBAR SUPERIOR */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
+      <nav className={`backdrop-blur-md border-b sticky top-0 z-40 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900/85 border-gray-800 text-white' : 'bg-white/80 border-gray-100'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm transform transition hover:rotate-3">
                 <span className="text-white font-bold text-lg">N</span>
               </div>
-              <span className="font-bold text-lg tracking-tight text-gray-900 hidden sm:block">
+              <span className={`font-bold text-lg tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'} hidden sm:block`}>
                 NutriColab
               </span>
             </div>
 
             {/* TABS DESKTOP */}
-            <div className="hidden md:flex gap-6 text-sm font-bold text-gray-500 h-full">
+            <div className="hidden md:flex gap-6 text-sm font-bold h-full">
               <button
                 onClick={() => setVistaActiva('mi-dia')}
                 className={`px-1 py-5 border-b-2 transition-all ${
                   vistaActiva === 'mi-dia' || vistaActiva === 'receta'
-                    ? 'text-emerald-600 border-emerald-600'
-                    : 'border-transparent hover:text-gray-900'
+                    ? 'text-emerald-500 border-emerald-500'
+                    : isDarkMode ? 'border-transparent text-gray-400 hover:text-white' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Mi Día
@@ -306,8 +317,8 @@ function LayoutPaciente({ cerrarSesion }) {
                 onClick={() => setVistaActiva('super')}
                 className={`px-1 py-5 border-b-2 transition-all ${
                   vistaActiva === 'super'
-                    ? 'text-emerald-600 border-emerald-600'
-                    : 'border-transparent hover:text-gray-900'
+                    ? 'text-emerald-500 border-emerald-500'
+                    : isDarkMode ? 'border-transparent text-gray-400 hover:text-white' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Súper
@@ -316,8 +327,8 @@ function LayoutPaciente({ cerrarSesion }) {
                 onClick={() => setVistaActiva('entrenamiento')}
                 className={`px-1 py-5 border-b-2 transition-all ${
                   vistaActiva === 'entrenamiento'
-                    ? 'text-emerald-600 border-emerald-600'
-                    : 'border-transparent hover:text-gray-900'
+                    ? 'text-emerald-500 border-emerald-500'
+                    : isDarkMode ? 'border-transparent text-gray-400 hover:text-white' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Actividad
@@ -326,8 +337,8 @@ function LayoutPaciente({ cerrarSesion }) {
                 onClick={() => setVistaActiva('chat')}
                 className={`px-1 py-5 border-b-2 transition-all ${
                   vistaActiva === 'chat'
-                    ? 'text-emerald-600 border-emerald-600'
-                    : 'border-transparent hover:text-gray-900'
+                    ? 'text-emerald-500 border-emerald-500'
+                    : isDarkMode ? 'border-transparent text-gray-400 hover:text-white' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Chat
@@ -336,33 +347,42 @@ function LayoutPaciente({ cerrarSesion }) {
                 onClick={() => setVistaActiva('progreso')}
                 className={`px-1 py-5 border-b-2 transition-all ${
                   vistaActiva === 'progreso'
-                    ? 'text-emerald-600 border-emerald-600'
-                    : 'border-transparent hover:text-gray-900'
+                    ? 'text-emerald-500 border-emerald-500'
+                    : isDarkMode ? 'border-transparent text-gray-400 hover:text-white' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Progreso
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* BOTÓN MODO OSCURO 🌙☀️ */}
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-full border transition-all ${isDarkMode ? 'bg-gray-800 border-gray-700 text-amber-400 hover:bg-gray-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                title="Cambiar modo oscuro/claro"
+              >
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
+
               {/* WIDGET DE RACHA 🔥 */}
-              <div className="hidden sm:flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-3 py-1.5 rounded-full shadow-sm" title="Racha de días cumplidos">
+              <div className="hidden sm:flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-100 dark:border-orange-900/50 px-3 py-1.5 rounded-full shadow-sm" title="Racha de días cumplidos">
                 <span className="text-base animate-pulse">🔥</span>
-                <span className="text-sm font-extrabold text-orange-600 tracking-tight">12 Días</span>
+                <span className="text-sm font-extrabold text-orange-600 dark:text-orange-400 tracking-tight">12 Días</span>
               </div>
 
               <button
                 onClick={() => setVistaActiva('perfil')}
                 className={`flex items-center gap-2 py-1 px-1 sm:px-3 rounded-full border transition-all ${
                   vistaActiva === 'perfil'
-                    ? 'bg-emerald-50 border-emerald-200'
-                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    : isDarkMode ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'
                 }`}
               >
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shadow-sm">
                   {datosPaciente.nombre.split(' ').map((n) => n[0]).join('').substring(0, 2)}
                 </div>
-                <span className="text-sm font-bold text-gray-700 hidden sm:block pr-1">
+                <span className="text-sm font-bold hidden sm:block pr-1">
                   Mi Perfil
                 </span>
               </button>
@@ -378,50 +398,50 @@ function LayoutPaciente({ cerrarSesion }) {
             <div>
               {vistaActiva === 'mi-dia' && (
                 <>
-                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  <h1 className={`text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     ¡Hola, {datosPaciente.nombre.split(' ')[0]}! 👋
                   </h1>
-                  <p className="text-gray-500 mt-1 font-medium">
+                  <p className="text-gray-400 mt-1 font-medium">
                     Este es tu plan de alimentación para hoy.
                   </p>
                 </>
               )}
               {vistaActiva === 'super' && (
                 <>
-                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  <h1 className={`text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Tu Despensa 🛒
                   </h1>
-                  <p className="text-gray-500 mt-1 font-medium">
+                  <p className="text-gray-400 mt-1 font-medium">
                     Ingredientes extraídos automáticamente.
                   </p>
                 </>
               )}
               {vistaActiva === 'entrenamiento' && (
                 <>
-                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  <h1 className={`text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Registro de Actividad 🏃‍♂️
                   </h1>
-                  <p className="text-gray-500 mt-1 font-medium">
+                  <p className="text-gray-400 mt-1 font-medium">
                     Monitorea tu balance energético.
                   </p>
                 </>
               )}
               {vistaActiva === 'chat' && (
                 <>
-                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  <h1 className={`text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Chat Especialista 💬
                   </h1>
-                  <p className="text-gray-500 mt-1 font-medium">
+                  <p className="text-gray-400 mt-1 font-medium">
                     Resuelve cualquier duda sobre tu plan al instante.
                   </p>
                 </>
               )}
               {vistaActiva === 'progreso' && (
                 <>
-                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  <h1 className={`text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Tus Métricas y Rendimiento 📈
                   </h1>
-                  <p className="text-gray-500 mt-1 font-medium">
+                  <p className="text-gray-400 mt-1 font-medium">
                     Analíticas cruzadas, antropometría y apego al plan.
                   </p>
                 </>
@@ -430,13 +450,13 @@ function LayoutPaciente({ cerrarSesion }) {
 
             {/* Modo Pareja Global */}
             {(vistaActiva === 'mi-dia' || vistaActiva === 'super') && (
-              <div className="hidden sm:flex bg-white p-1 rounded-2xl w-64 h-12 border border-gray-200 shadow-sm">
+              <div className={`hidden sm:flex p-1 rounded-2xl w-64 h-12 border shadow-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                 <button
                   onClick={() => setModoPareja(false)}
                   className={`flex-1 rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
                     !modoPareja
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                      ? isDarkMode ? 'bg-gray-900 text-white shadow-sm' : 'bg-gray-900 text-white shadow-sm'
+                      : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
                   Individual
@@ -446,7 +466,7 @@ function LayoutPaciente({ cerrarSesion }) {
                   className={`flex-1 rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
                     modoPareja
                       ? 'bg-emerald-500 text-white shadow-sm'
-                      : 'text-gray-500 hover:text-emerald-600 hover:bg-emerald-50'
+                      : isDarkMode ? 'text-gray-400 hover:text-emerald-400' : 'text-gray-500 hover:text-emerald-600 hover:bg-emerald-50'
                   }`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -465,6 +485,7 @@ function LayoutPaciente({ cerrarSesion }) {
               <VistaPerfil
                 datosPaciente={datosPaciente}
                 cerrarSesion={cerrarSesion}
+                isDarkMode={isDarkMode}
               />
             </div>
           ) : (
@@ -478,18 +499,19 @@ function LayoutPaciente({ cerrarSesion }) {
                     modoPareja={modoPareja}
                     setModoPareja={setModoPareja}
                     onVerReceta={abrirReceta}
+                    isDarkMode={isDarkMode}
                   />
                 )}
 
                 {vistaActiva === 'super' && (
                   <div className="space-y-6">
-                    <div className="sm:hidden bg-white p-1 rounded-2xl flex items-center mb-2 border border-gray-200 shadow-sm h-12">
+                    <div className={`sm:hidden p-1 rounded-2xl flex items-center mb-2 border shadow-sm h-12 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                       <button
                         onClick={() => setModoPareja(false)}
                         className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
                           !modoPareja
                             ? 'bg-gray-900 text-white shadow-sm'
-                            : 'text-gray-500 hover:bg-gray-50'
+                            : isDarkMode ? 'text-gray-400' : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
                         Individual
@@ -499,7 +521,7 @@ function LayoutPaciente({ cerrarSesion }) {
                         className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
                           modoPareja
                             ? 'bg-emerald-500 text-white shadow-sm'
-                            : 'text-gray-500 hover:bg-emerald-50 hover:text-emerald-600'
+                            : isDarkMode ? 'text-gray-400' : 'text-gray-500 hover:bg-emerald-50 hover:text-emerald-600'
                         }`}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,16 +533,18 @@ function LayoutPaciente({ cerrarSesion }) {
                     <VistaSuper
                       datosPaciente={datosPaciente}
                       modoPareja={modoPareja}
+                      isDarkMode={isDarkMode}
                     />
                   </div>
                 )}
 
-                {vistaActiva === 'entrenamiento' && <VistaEntrenamiento />}
-                {vistaActiva === 'chat' && <VistaChatPaciente />}
+                {vistaActiva === 'entrenamiento' && <VistaEntrenamiento isDarkMode={isDarkMode} />}
+                {vistaActiva === 'chat' && <VistaChatPaciente isDarkMode={isDarkMode} />}
                 {vistaActiva === 'progreso' && (
                   <VistaProgreso 
                     metricas={datosPaciente.metricas || pacientesDB[0]?.metricas || []} 
                     modoPareja={modoPareja} 
+                    isDarkMode={isDarkMode}
                   />
                 )}
                 {vistaActiva === 'receta' && comidaParaReceta && (
@@ -528,6 +552,7 @@ function LayoutPaciente({ cerrarSesion }) {
                     comida={comidaParaReceta}
                     modoPareja={modoPareja}
                     volver={() => setVistaActiva('mi-dia')}
+                    isDarkMode={isDarkMode}
                   />
                 )}
               </div>
@@ -562,7 +587,7 @@ function LayoutPaciente({ cerrarSesion }) {
       </main>
 
       {/* NAVBAR MÓVIL INFERIOR */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 z-50 h-[calc(5rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)]">
+      <div className={`md:hidden fixed bottom-0 left-0 w-full backdrop-blur-lg border-t z-50 h-[calc(5rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] transition-colors duration-300 ${isDarkMode ? 'bg-gray-900/90 border-gray-800' : 'bg-white/90 border-gray-100'}`}>
         <div className="flex justify-around items-center h-full px-2 max-w-md mx-auto">
           {[
             { id: 'mi-dia', label: 'Mi Día', icon: 'M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a3 3 0 01-3-3h6a3 3 0 01-3 3z' },
@@ -581,8 +606,8 @@ function LayoutPaciente({ cerrarSesion }) {
                 <div
                   className={`flex items-center justify-center w-12 h-8 rounded-2xl transition-all duration-300 ${
                     isActivo
-                      ? 'bg-emerald-100 text-emerald-600 shadow-inner scale-110'
-                      : 'text-gray-400 group-hover:text-gray-600 group-hover:bg-gray-50'
+                      ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 shadow-inner scale-110'
+                      : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
                   <svg className="w-5 h-5" fill={tab.outline && !isActivo ? "none" : "currentColor"} stroke={tab.outline && !isActivo ? "currentColor" : "none"} viewBox="0 0 24 24">
@@ -591,7 +616,7 @@ function LayoutPaciente({ cerrarSesion }) {
                 </div>
                 <span
                   className={`text-[9px] font-extrabold mt-1.5 transition-colors ${
-                    isActivo ? 'text-emerald-700' : 'text-gray-400'
+                    isActivo ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'
                   }`}
                 >
                   {tab.label}
