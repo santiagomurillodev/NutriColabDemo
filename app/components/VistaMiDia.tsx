@@ -22,7 +22,6 @@ export default function VistaMiDia({
   isDarkMode,
 }: VistaMiDiaProps) {
   
-  // Días de la semana disponibles para navegar
   const diasDisponibles = [
     { id: 'lunes', label: 'LUN', nombreCompleto: 'Lunes' },
     { id: 'martes', label: 'MAR', nombreCompleto: 'Martes' },
@@ -33,14 +32,23 @@ export default function VistaMiDia({
     { id: 'domingo', label: 'DOM', nombreCompleto: 'Domingo' },
   ];
 
-  // Estado para el día seleccionado (por defecto lunes o el actual)
   const [diaSeleccionado, setDiaSeleccionado] = useState('lunes');
 
-  // Obtenemos el plan del día seleccionado (si no existe un día como sábado, recurrimos a lunes como ejemplo)
-  const planDelDia = datosPaciente?.dias?.[diaSeleccionado] || datosPaciente?.dias?.lunes || {};
-  const menuOficial = Object.values(planDelDia).map((comida: any, index: number) => ({
+  // Obtenemos el plan del día asegurando compatibilidad con la estructura de datos
+  const diasDB = datosPaciente?.dias || datosPaciente?.plan || {};
+  const planDelDia = diasDB[diaSeleccionado] || diasDB['lunes'] || {};
+  
+  // Convertimos a array y si el día seleccionado no tiene datos separados, adaptamos los del lunes para que se note el cambio de día dinámicamente
+  let menuOficial = Object.values(planDelDia);
+  
+  if (menuOficial.length === 0 && diasDB['lunes']) {
+    menuOficial = Object.values(diasDB['lunes']);
+  }
+
+  const listadoComidas = menuOficial.map((comida: any, index: number) => ({
     ...comida,
     id: `comida-${diaSeleccionado}-${index}`,
+    titulo: diaSeleccionado !== 'lunes' ? `${comida.titulo} (${diasDisponibles.find(d => d.id === diaSeleccionado)?.nombreCompleto})` : comida.titulo,
     completado: false
   }));
 
@@ -69,11 +77,11 @@ export default function VistaMiDia({
         })}
       </div>
 
-      <div className="sm:hidden bg-gray-100 p-1 rounded-2xl flex items-center mb-2">
+      <div className="sm:hidden bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl flex items-center mb-2">
         <button
           onClick={() => setModoPareja(false)}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
-            !modoPareja ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+            !modoPareja ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500'
           }`}
         >
           Individual
@@ -81,7 +89,7 @@ export default function VistaMiDia({
         <button
           onClick={() => setModoPareja(true)}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
-            modoPareja ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500'
+            modoPareja ? 'bg-white dark:bg-gray-900 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-gray-500'
           }`}
         >
           Pareja (x2)
@@ -96,14 +104,14 @@ export default function VistaMiDia({
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">Mostrando recetas y porciones sincronizadas.</p>
         </div>
-        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
           🗓️ Vista Semanal
         </span>
       </div>
 
       {/* Listado de Comidas */}
-      {menuOficial.length > 0 ? (
-        menuOficial.map((comida: any) => (
+      {listadoComidas.length > 0 ? (
+        listadoComidas.map((comida: any) => (
           <TarjetaComida
             key={comida.id}
             comida={comida}

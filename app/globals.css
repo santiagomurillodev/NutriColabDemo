@@ -6,8 +6,7 @@ html,
 body {
   background-color: #ffffff;
   color: #1F2937;
-  overflow-x: hidden;
-  overscroll-behavior-y: none;
+  /* Eliminados overflow-x y overscroll-behavior para restaurar los gestos de navegación en Windows */
 }
 
 /* Modo Oscuro Global */
