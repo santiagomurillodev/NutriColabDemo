@@ -119,7 +119,7 @@ export default function AppPrincipal() {
 
   if (!estaAutenticado) {
     return (
-      <div className="min-h-dvh flex bg-white selection:bg-emerald-200">
+      <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-white selection:bg-emerald-200">
         {/* Lado Izquierdo (Branding - Solo Desktop) */}
         <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-600 to-teal-800 items-center justify-center p-12 relative overflow-hidden">
           {/* Efectos de fondo glassmorphic */}
@@ -148,10 +148,10 @@ export default function AppPrincipal() {
         </div>
 
         {/* Lado Derecho (Formulario) */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-[#F8FAFC]">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-[#F8FAFC] flex-1">
           <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
             {/* Logo móvil */}
-            <div className="lg:hidden flex flex-col items-center mb-8">
+            <div className="lg:hidden flex flex-col items-center mb-8 mt-4">
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 mb-4">
                 <span className="text-white font-extrabold text-3xl">N</span>
               </div>
@@ -282,7 +282,7 @@ function LayoutPaciente({ cerrarSesion }) {
     );
 
   return (
-    <div className="bg-[#F8FAFC] font-sans antialiased text-gray-800 min-h-dvh pb-28 md:pb-0">
+    <div className="bg-[#F8FAFC] font-sans antialiased text-gray-800 min-h-[100dvh] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       {/* NAVBAR SUPERIOR */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -563,8 +563,8 @@ function LayoutPaciente({ cerrarSesion }) {
         </div>
       </main>
 
-      {/* NAVBAR MÓVIL INFERIOR */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 z-50 h-20 pb-safe">
+      {/* NAVBAR MÓVIL INFERIOR CON REGLAS DE SAFE-AREA */}
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 z-50 h-[calc(5rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-around items-center h-full px-2 max-w-md mx-auto">
           {[
             { id: 'mi-dia', label: 'Mi Día', icon: 'M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a3 3 0 01-3-3h6a3 3 0 01-3 3z' },

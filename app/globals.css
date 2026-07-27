@@ -2,26 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+/* Forzamos a que el fondo del navegador sea siempre del color de tu app, nunca negro */
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #ffffff; /* Color blanco para el login */
+  color: #1F2937;
+  /* Evita el scroll horizontal fantasma */
+  overflow-x: hidden;
+  /* Hace que el "rebote" de Safari se vea del mismo color que el fondo */
+  overscroll-behavior-y: none; 
+}
+
+/* Cuando el usuario entra a la app, cambiamos el fondo de body al color grisecito #F8FAFC */
+body:has(main) {
+  background-color: #F8FAFC;
 }
