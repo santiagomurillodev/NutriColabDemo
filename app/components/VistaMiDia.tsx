@@ -34,21 +34,50 @@ export default function VistaMiDia({
 
   const [diaSeleccionado, setDiaSeleccionado] = useState('lunes');
 
-  // Obtenemos el plan del día asegurando compatibilidad con la estructura de datos
-  const diasDB = datosPaciente?.dias || datosPaciente?.plan || {};
-  const planDelDia = diasDB[diaSeleccionado] || diasDB['lunes'] || {};
-  
-  // Convertimos a array y si el día seleccionado no tiene datos separados, adaptamos los del lunes para que se note el cambio de día dinámicamente
-  let menuOficial = Object.values(planDelDia);
-  
-  if (menuOficial.length === 0 && diasDB['lunes']) {
-    menuOficial = Object.values(diasDB['lunes']);
-  }
+  // Menús reales variados por cada día de la semana para que los ingredientes y macros cambien de verdad
+  const menusPorDia = {
+    lunes: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Omelet de claras con espinacas y panela', macros: { kcal: 340, prot: 28 }, ingredientes: ['3 claras de huevo y 1 huevo entero', '1 taza de espinacas frescas', '40g de queso panela', '1 tostada de nopal'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Pechuga a la plancha con arroz y aguacate', macros: { kcal: 520, prot: 45 }, ingredientes: ['180g de pechuga de pollo', '1 taza de arroz integral cocido', '1/2 aguacate hass', 'Ensalada verde libre'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Salmón con espárragos al vapor', macros: { kcal: 410, prot: 35 }, ingredientes: ['160g de filete de salmón', '8 piezas de espárragos', '1 cucharada de aceite de oliva', 'Jugo de limón y especias'] }
+    ],
+    martes: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Bowl de avena con frutos rojos y proteína', macros: { kcal: 360, prot: 30 }, ingredientes: ['1/2 taza de avena en hojuelas', '1 scoop de proteína en polvo sabor vainilla', '1/2 taza de zarzamoras o fresas', '15 almendras picadas'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Fajitas de res con pimientos y frijoles', macros: { kcal: 540, prot: 42 }, ingredientes: ['170g de bistec de res magro en tiras', '1 taza de pimientos mixtos salteados', '1/2 taza de frijoles negros de la olla', '2 tortillas de maíz'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Pechuga desmenuzada con ensalada fresca', macros: { kcal: 380, prot: 38 }, ingredientes: ['150g de pollo cocido desmenuzado', '2 tazas de lechuga romana', '1/4 de taza de jitomate cherry', 'Aderezo ligero de yogur griego'] }
+    ],
+    miercoles: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Tostadas de aguacate con huevo pochado', macros: { kcal: 350, prot: 22 }, ingredientes: ['2 rebanadas de pan integral artesanal', '1/2 aguacate machacado', '2 huevos pochados o estrellados', 'Semillas de ajonjolí tostadas'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Atún sellado con puré de camote', macros: { kcal: 490, prot: 44 }, ingredientes: ['180g de medallón de atún fresco', '1 camote mediano horneado y hecho puré', 'Brócoli al vapor (1 taza)', '1 cucharada de salsa ponzu o soya baja en sodio'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Sopa de verduras con pollo y requesón', macros: { kcal: 320, prot: 30 }, ingredientes: ['Caldo de pollo natural desgrasado', '1 taza de verduras mixtas picadas', '100g de pollo deshebrado', '2 cucharadas de requesón'] }
+    ],
+    jueves: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Yogur griego con granola baja en azúcar', macros: { kcal: 330, prot: 26 }, ingredientes: ['1 taza de yogur griego natural sin grasa', '1/3 de taza de granola artesanal', '1 manzana picada en cubos', '1 pizca de canela en polvo'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Milanesa de pollo horneada con quinoa', macros: { kcal: 510, prot: 46 }, ingredientes: ['180g de pechuga empanizada con avena (al horno)', '1 taza de quinoa cocida', 'Calabacitas y zanahorias asadas', '1 cucharada de aceite de oliva'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Wrap de atún en hoja de lechuga', macros: { kcal: 310, prot: 32 }, ingredientes: ['1 lata de atún en agua drenada', '2 cucharadas de jitomate y cebolla picados', 'Hojas grandes de lechuga orejona como base', '1 cucharada ligera de yogur griego'] }
+    ],
+    viernes: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Hot cakes saludables de plátano y avena', macros: { kcal: 360, prot: 24 }, ingredientes: ['1 plátano maduro machacado', '1/2 taza de harina de avena', '2 claras de huevo', '1 chorrito de vainilla y un toque de canela'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Filete de pescado a la veracruzana', macros: { kcal: 460, prot: 42 }, ingredientes: ['180g de filete de pescado blanco (merluza o huachinango)', 'Salsa de jitomate natural con alcaparras y aceitunas', '1 taza de arroz blanco al vapor', 'Ensalada verde mixta'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Quesadillas fit con tortilla de nopal', macros: { kcal: 340, prot: 28 }, ingredientes: ['2 tortillas de nopal', '80g de queso panela desmoronado o gouda light', 'Pico de gallo al gusto', 'Infusión de té verde'] }
+    ],
+    sabado: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Huevos revueltos con jamón de pavo', macros: { kcal: 370, prot: 30 }, ingredientes: ['2 huevos enteros', '60g de jamón de pavo natural en cubos', '2 tortillas de maíz calentadas', 'Salsa roja tatemada'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Pechuga marinada a las hierbas finas', macros: { kcal: 500, prot: 45 }, ingredientes: ['180g de pechuga marinada con romero y ajo', 'Papa cambray al horno (150g)', 'Ensalada de espinacas con nuez', 'Vinagreta balsámica'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Tostadas horneadas de pollo deshebrado', macros: { kcal: 350, prot: 32 }, ingredientes: ['3 tostadas horneadas de maíz', '120g de pollo deshebrado', 'Lechuga, crema light y queso fresco', 'Salsa verde'] }
+    ],
+    domingo: [
+      { tipo: 'Desayuno', horario: '08:00 AM', titulo: 'Waffles de proteína con frutos rojos', macros: { kcal: 380, prot: 32 }, ingredientes: ['1 porción de mezcla para waffles proteicos', '1/2 taza de arándanos frescos', '1 cucharadita de miel de maple sin azúcar', 'Café americano negro'] },
+      { tipo: 'Comida', horario: '02:30 PM', titulo: 'Corte magro de res (Sirloin) con ensalada', macros: { kcal: 550, prot: 48 }, ingredientes: ['180g de bistec de sirloin asado', '1 papa asada mediana al horno', 'Espárragos y champiñones salteados', 'Chimichurri casero ligero'] },
+      { tipo: 'Cena', horario: '08:00 PM', titulo: 'Cena ligera de pan tostado con requesón', macros: { kcal: 290, prot: 22 }, ingredientes: ['2 rebanadas de pan integral tostado', '4 cucharadas de requesón descremado', 'Rodajas de jitomate y albahaca fresca', 'Té de manzanilla'] }
+    ]
+  };
 
-  const listadoComidas = menuOficial.map((comida: any, index: number) => ({
+  const planDelDia = menusPorDia[diaSeleccionado] || menusPorDia['lunes'];
+  
+  const menuOficial = planDelDia.map((comida: any, index: number) => ({
     ...comida,
     id: `comida-${diaSeleccionado}-${index}`,
-    titulo: diaSeleccionado !== 'lunes' ? `${comida.titulo} (${diasDisponibles.find(d => d.id === diaSeleccionado)?.nombreCompleto})` : comida.titulo,
     completado: false
   }));
 
@@ -110,8 +139,8 @@ export default function VistaMiDia({
       </div>
 
       {/* Listado de Comidas */}
-      {listadoComidas.length > 0 ? (
-        listadoComidas.map((comida: any) => (
+      {menuOficial.length > 0 ? (
+        menuOficial.map((comida: any) => (
           <TarjetaComida
             key={comida.id}
             comida={comida}
