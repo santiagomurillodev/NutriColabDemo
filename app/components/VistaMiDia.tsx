@@ -80,15 +80,23 @@ export default function VistaMiDia({
         </span>
       </div>
 
-      {datosPaciente.planHoy.map((comida: any) => (
-        <TarjetaComida
-          key={comida.id}
-          comida={comida}
-          onCompletar={manejarCompletado}
-          modoPareja={modoPareja}
-          onVerReceta={onVerReceta}
-        />
-      ))}
+      {datosPaciente?.planHoy && datosPaciente.planHoy.length > 0 ? (
+        datosPaciente.planHoy.map((comida: any) => (
+          <TarjetaComida
+            key={comida.id}
+            comida={comida}
+            onCompletar={manejarCompletado}
+            modoPareja={modoPareja}
+            onVerReceta={onVerReceta}
+          />
+        ))
+      ) : (
+        <div className="bg-white rounded-[2rem] p-8 text-center border border-gray-100 shadow-sm">
+          <p className="text-gray-400 font-medium text-sm">
+            No hay elementos cargados en el plan de hoy.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
