@@ -1,15 +1,26 @@
 import React from 'react';
 import TarjetaComida from './TarjetaComida';
 
-export default function VistaMiDia(props: any) {
-  // Extraemos las variables aquí adentro para que TypeScript no marque error en la declaración
-  const datosPaciente = props.datosPaciente;
-  const fechaHoy = props.fechaHoy;
-  const manejarCompletado = props.manejarCompletado;
-  const modoPareja = props.modoPareja;
-  const setModoPareja = props.setModoPareja;
-  const onVerReceta = props.onVerReceta;
+interface VistaMiDiaProps {
+  datosPaciente: {
+    planHoy: any[];
+    [key: string]: any;
+  };
+  fechaHoy: string;
+  manejarCompletado: (id: string, estado: boolean) => void;
+  modoPareja: boolean;
+  setModoPareja: (modo: boolean) => void;
+  onVerReceta: (comida: any) => void;
+}
 
+export default function VistaMiDia({
+  datosPaciente,
+  fechaHoy,
+  manejarCompletado,
+  modoPareja,
+  setModoPareja,
+  onVerReceta,
+}: VistaMiDiaProps) {
   return (
     <div className="space-y-6">
       <div className="sm:hidden bg-gray-100 p-1 rounded-2xl flex items-center mb-2">
