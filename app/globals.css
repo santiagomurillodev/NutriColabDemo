@@ -7,10 +7,7 @@ html,
 body {
   background-color: #ffffff; /* Color blanco para el login */
   color: #1F2937;
-  /* Evita el scroll horizontal fantasma */
-  overflow-x: hidden;
-  /* Hace que el "rebote" de Safari se vea del mismo color que el fondo */
-  overscroll-behavior-y: none; 
+  /* Quitamos el overflow-x y el overscroll-behavior para que los gestos de Windows y Mac vuelvan a funcionar */
 }
 
 /* Cuando el usuario entra a la app, cambiamos el fondo de body al color grisecito #F8FAFC */
